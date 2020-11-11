@@ -7,13 +7,12 @@ from typing import Union
 
 class DataBase:
     def __init__(self, facts, schema, test=False):
-        self.facts = facts
+        self.facts = []
         self.schema = schema
         if not test:
-            self.check_schema(schema)
-            self.init_schema()
-            self.check_facts()
-            self.init_facts()
+            if self.check_schema(schema) and self.check_facts(facts):
+                self.attributes_cardinality = self.init_schema()
+                self.init_facts(facts)
 
     def check_schema(self, schema: Union[list, tuple]) -> bool:
         def is_list_or_tuple(list_or_tuple):
@@ -32,19 +31,22 @@ class DataBase:
                                  for attribute in schema for item in attribute])
 
         return all((len_status, one_or_many, string_status))
-        # only_schema = schema[0]
-        # len_status = len(only_schema)
 
-        # type_schema = only_schema[2].lower()
-        # one_or_many = type_schema == "one" or type_schema == "many"
-
-        # string_status = all([type(item) for item in only_schema])
-
-    def init_schema(self):
-        pass
+    def init_schema(self, schema):
+        attribute_cardinality = {
+            attribute[0].lower(): attribute[-1].lower() for attribute in schema}
+        return attribute_cardinality
 
     def check_facts(self):
+        return True
+
+    def init_facts(self, facts):
         pass
 
-    def init_facts(self):
-        pass
+
+class Entity:
+    def __init__(self, name, attribute, value, added):
+        self.name = name
+        self.attribute = attribute
+        self.value = value
+        self.added = added

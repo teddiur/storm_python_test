@@ -13,3 +13,18 @@ def test_schema_false():
         ['EVEN', 'IF', 'ONE'], ['OF STRINGS', 1, 'erp'], ['GONNA', 'pass the test', 'one']]]
     for schema in schemas_false:
         assert DataBase(None, None, test=True).check_schema(schema) == False
+
+
+def test_add_schema():
+    schemas = [[['endereço', 'JUST one schema', 'oNe']],
+               [['endereço', 'cardinality', 'one'], [
+                   'telefone', 'and i\'ll', 'manY']],
+               [['rua', 'IF', 'ONE'], ['casas', 'ARE RIDICULOUS LARGE', 'MANY'], ['nome', 'pass the test', 'one']]]
+
+    expected_result = [{'endereço': 'one1'}, {'endereço': 'one', 'telefone': 'many'}, {
+        'rua': 'one', 'casas': 'many', 'nome': 'one'}]
+    for i, schema in enumerate(schemas):
+        # Dict comparission doesn't work well if dicts are different
+        result = DataBase(None, None, test=True).init_schema(
+            schema) == expected_result[i]
+        assert result == True
