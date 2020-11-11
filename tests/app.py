@@ -24,7 +24,7 @@ class DataBase:
             return False
 
         else:
-            # needs improvement
+            # needs improvement. catch AattributeError
             len_status = all([len(attribute) == 3 for attribute in schema])
             one_or_many = all([attribute[2].lower() == "one" or attribute[2].lower(
             ) == "many" for attribute in schema])
