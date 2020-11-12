@@ -1,4 +1,5 @@
-from app import DataBase
+from ..src import app
+app.DataBase(None, None, test=True)
 
 
 def test_schema_true():
@@ -15,16 +16,36 @@ def test_schema_false():
         assert DataBase(None, None, test=True).check_schema(schema) == False
 
 
-def test_add_schema():
+def test_update_schema():
     schemas = [[['endereço', 'JUST one schema', 'oNe']],
                [['endereço', 'cardinality', 'one'], [
                    'telefone', 'and i\'ll', 'manY']],
                [['rua', 'IF', 'ONE'], ['casas', 'ARE RIDICULOUS LARGE', 'MANY'], ['nome', 'pass the test', 'one']]]
-
     expected_result = [{'endereço': 'one1'}, {'endereço': 'one', 'telefone': 'many'}, {
         'rua': 'one', 'casas': 'many', 'nome': 'one'}]
+
     for i, schema in enumerate(schemas):
         # Dict comparission doesn't work well if dicts are different
-        result = DataBase(None, None, test=True).init_schema(
+        result = DataBase(None, None, test=True).update_schema(
             schema) == expected_result[i]
         assert result == True
+
+
+def test_init_facts():
+    facts = [
+        ('gabriel', 'endereço', 'av rio branco, 109', True),
+        ('joão', 'endereço', 'rua alice, 10', True),
+        ('joão', 'endereço', 'rua bob, 88', True),
+        ('joão', 'telefone', '234-5678', True),
+        ('joão', 'telefone', '91234-5555', True),
+        ('joão', 'telefone', '234-5678', False),
+        ('gabriel', 'telefone', '98888-1111', True),
+        ('gabriel', 'telefone', '56789-1010', True),
+    ]
+    expected_result = [
+        ('gabriel', 'endereço', 'av rio branco, 109', True),
+        ('joão', 'endereço', 'rua bob, 88', True),
+        ('joão', 'telefone', '91234-5555', True),
+        ('gabriel', 'telefone', '98888-1111', True),
+        ('gabriel', 'telefone', '56789-1010', True)
+    ]
