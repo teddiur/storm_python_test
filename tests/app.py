@@ -3,7 +3,8 @@ from typing import Union
 # FactList = list[Union[str, bool]]
 # FactTuple = tuple[Union[str, bool]]
 # facts: Union[FactList, FactTuple], schema: Union[list[str], tuple[str]]
-
+def is_list_or_tuple(inspected):
+    return type(inspected) == list or type(inspected) == tuple
 
 class DataBase:
     def __init__(self, facts, schema, test=False):
@@ -15,9 +16,6 @@ class DataBase:
                 self.update_facts(facts)
 
     def check_schema(self, schema: Union[list, tuple]) -> bool:
-        def is_list_or_tuple(list_or_tuple):
-            return type(schema) == list or type(schema) == tuple
-
         if not is_list_or_tuple(schema) or not is_list_or_tuple(schema[0]):
             print("Bad schema")
             return False
@@ -33,7 +31,7 @@ class DataBase:
         return all((len_status, one_or_many, string_status))
 
     def update_schema(self, schema):
-        self.attribute_cardinality = {
+        self.attributes_cardinality = {
             attribute[0].lower(): attribute[-1].lower() for attribute in schema}
 
     def check_facts(self, facts):
@@ -42,12 +40,25 @@ class DataBase:
     def update_facts(self, facts):
         for fact in facts:
             name = fact[0]
+            params = fact[1:]
             if self.current_facts.get(name, False) == False:
                 self.current_facts[name] = Entity(
                     name, self.attributes_cardinality)
-                    
-            self.current_facts[name].manage_attribute(fact[1:])
+            self.current_facts[name].manage_attribute(params)
 
+    def show_facts(self):
+        facts = []
+        for entity in self.current_facts.values():
+            facts.extend(entity.get_attributes())
+        self.prettify(facts)
+    
+    def prettify(self, facts):
+        print('[')
+        for i, fact in enumerate(facts):
+            print(f'    {fact}', end='')
+            if i != len(facts)-1:
+                print(',')
+        print('\n]')
 
 class Entity:
     def __init__(self, name, attributes_cardinality):
@@ -59,7 +70,6 @@ class Entity:
         attribute_name = attribute[0]
         attribute_value = attribute[1]
         add = attribute[2]
-
         if add:
             self.add_attribute(
                 attribute_name, attribute_value)
@@ -67,18 +77,19 @@ class Entity:
             self.remove_attribute(attribute_name, attribute_value)
 
     def add_attribute(self, att_name, value):
-        if self._names_cardinality[att_name] == "many":
+        if self.attributes_cardinality[att_name] == "many":
             try:
                 self.attributes[att_name].append(value)
-            except AttributeError:
+            except KeyError:
                 self.attributes[att_name] = [value]
             finally:
                 return
 
         self.attributes[att_name] = value
 
+
     def remove_attribute(self, att_name, value):
-        cardinality = self.attribute_cardinality[att_name]
+        cardinality = self.attributes_cardinality[att_name]
         if cardinality == "many":
             try:
                 self.attributes[att_name].remove(value)
@@ -86,5 +97,20 @@ class Entity:
                 print("Não há um fato com esse valor")
                 return
 
-        if (cardinality == "one" and self.attributes[att_name] = value) or self.attributes[att_name] == [] 
+        if (cardinality == "one" and self.attributes[att_name] == value) or self.attributes[att_name] == []:
             del self.attributes[att_name]
+    
+    def get_attributes(self):
+        facts = []
+        for att_name in self.attributes.keys():
+            facts.extend(self.get_attribute(att_name))
+        return facts
+    
+    def get_attribute(self, att_name):
+        facts = []
+        if is_list_or_tuple(self.attributes[att_name]):
+            for value in self.attributes[att_name]:
+                facts.append((self.name, att_name, value, True))
+        else:
+            facts.append((self.name, att_name, self.attributes[att_name], True))
+        return facts

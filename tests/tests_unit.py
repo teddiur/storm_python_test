@@ -1,21 +1,27 @@
 from app import DataBase
 
 
-def test_schema_true():
-    schemas_true = [[['GONNA', 'JUST one schema', 'one']], [['hey', 'this is', 'one'], ['a test', 'and i\'ll', 'manY']], [
-        ['EVEN', 'IF', 'ONE'], ['OF STRINGS', 'ARE RIDICULOUS LARGE', 'MANY'], ['GONNA', 'pass the test', 'one']]]
-    for schema in schemas_true:
-        assert DataBase(None, None, test=True).check_schema(schema) == True
+def test_schema_small_true():
+    schema = [['GONNA', 'JUST one schema', 'one']]
+    assert DataBase(None, None, test=True).check_schema(schema) == True
 
+def test_schema_big_true():
+    schema = [['EVEN', 'IF', 'ONE'], ['OF STRINGS', 'ARE RIDICULOUS LARGE', 'MaNY'], ['GONNA', 'pass the test', 'one']]
+    assert DataBase(None, None, test=True).check_schema(schema) == True
 
-def test_schema_false():
-    schemas_false = [[['GONNA', 'JUST one schema', 'one', 'hehe']], [['hey', 'this is', 'nope'], ['a test', 'and i\'ll', 'manY']], [
-        ['EVEN', 'IF', 'ONE'], ['OF STRINGS', 1, 'erp'], ['GONNA', 'pass the test', 'one']]]
-    for schema in schemas_false:
-        assert DataBase(None, None, test=True).check_schema(schema) == False
+def test_schema_onemany_false():
+    schema = [['GONNA', 'JUST one schema', 'one', 'hehe']]
+    assert DataBase(None, None, test=True).check_schema(schema) == False
 
+def test_schema_number_false():
+    schema = [['EVEN', 'IF', 'ONE'], ['OF STRINGS', 1, 'erp'], ['GONNA', 'pass the test', 'one']]
+    assert DataBase(None, None, test=True).check_schema(schema) == False
 
-def test_update_schema():
+def test_schema_lenght_false():
+    schema = [['EVEN', 'IF', 'ONE'], ['yeah'] ['OF STRINGS', 'hehe', 'many'], ['GONNA', 'pass the test', 'one']]
+    assert DataBase(None, None, test=True).check_schema(schema) == False
+
+def test_update_schema_true():
     schemas = [[['endereço', 'JUST one schema', 'oNe']],
                [['endereço', 'cardinality', 'one'], [
                    'telefone', 'and i\'ll', 'manY']],
@@ -30,21 +36,4 @@ def test_update_schema():
         assert result == True
 
 
-def test_init_facts():
-    facts = [
-        ('gabriel', 'endereço', 'av rio branco, 109', True),
-        ('joão', 'endereço', 'rua alice, 10', True),
-        ('joão', 'endereço', 'rua bob, 88', True),
-        ('joão', 'telefone', '234-5678', True),
-        ('joão', 'telefone', '91234-5555', True),
-        ('joão', 'telefone', '234-5678', False),
-        ('gabriel', 'telefone', '98888-1111', True),
-        ('gabriel', 'telefone', '56789-1010', True),
-    ]
-    expected_result = [
-        ('gabriel', 'endereço', 'av rio branco, 109', True),
-        ('joão', 'endereço', 'rua bob, 88', True),
-        ('joão', 'telefone', '91234-5555', True),
-        ('gabriel', 'telefone', '98888-1111', True),
-        ('gabriel', 'telefone', '56789-1010', True)
-    ]
+

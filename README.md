@@ -11,7 +11,7 @@ Storm's Python test
 [x] Database method to update update current_facts
     [x] if name doesn't exist in current_facts instantialize Entity and add it to the dict
     [x] call Entity method to update it's facts
-[ ] Database method to print all current_facts (it calls all Entities method to print its facts)
+[x] Database method to print all current_facts (it calls all Entities method to print its facts)
 
 [x] create Entity class
     [x] name (str) param
@@ -22,7 +22,7 @@ Storm's Python test
         [x] Entity method to add attribute
         [x] Entity method to reassing attribute
         [x] Entity method to delete attribute
-[ ] Entity method to print its attributes
+[x] Entity method to print its attributes
 
 
 current_facts = {name: entity}
