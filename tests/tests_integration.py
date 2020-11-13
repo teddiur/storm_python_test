@@ -27,5 +27,6 @@ def test_update_facts():
     test.update_schema(schema)
     test.update_facts(facts)
     test.show_facts()
+    assert test.check_facts(schema, facts) == True
     # print(test)
 test_update_facts()

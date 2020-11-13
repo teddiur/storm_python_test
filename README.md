@@ -6,7 +6,7 @@ Storm's Python test
     [x] current_facts dict ({})
     [x] schema_cardinality dict (definied in update_schema()) ({})
 [x] Database method to check if schema is well formatted
-[ ] Database method to check if input facts is well formatted
+[x] Database method to check if input facts is well formatted
 [x] Database method to update schema (create a dict with {schema_name: cardinality})
 [x] Database method to update update current_facts
     [x] if name doesn't exist in current_facts instantialize Entity and add it to the dict

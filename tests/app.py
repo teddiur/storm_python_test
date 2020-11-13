@@ -11,22 +11,26 @@ class DataBase:
         self.current_facts = {}
         self.attributes_cardinality = {}
         if not test:
-            if self.check_schema(schema) and self.check_facts(facts):
+            if self.check_schema(schema) and self.check_facts(schema, facts):
                 self.update_schema(schema)
                 self.update_facts(facts)
 
-    def check_schema(self, schema: Union[list, tuple]) -> bool:
-        if not is_list_or_tuple(schema) or not is_list_or_tuple(schema[0]):
-            print("Bad schema")
-            return False
+    def check_schema(self, schemas: Union[list, tuple]) -> bool:
+        try:
+            if not is_list_or_tuple(schemas) or not all([is_list_or_tuple(schema) for schema in schemas]):
+                print("Bad schemas, it should be a list/tuple of list/tuple")
+                return False
 
-        else:
-            # needs improvement. catch AattributeError
-            len_status = all([len(attribute) == 3 for attribute in schema])
-            one_or_many = all([attribute[2].lower() == "one" or attribute[2].lower(
-            ) == "many" for attribute in schema])
-            string_status = all([type(item) == str
-                                 for attribute in schema for item in attribute])
+            else:
+                # needs improvement. catch AattributeError
+                len_status = all([len(attribute) == 3 for attribute in schemas])
+                one_or_many = all([attribute[2].lower() == "one" or attribute[2].lower(
+                ) == "many" for attribute in schemas])
+                string_status = all([type(item) == str
+                                    for attribute in schemas for item in attribute])
+        except IndexError:
+            print("Bad schema, your cardinality specification is too short")
+            return False
 
         return all((len_status, one_or_many, string_status))
 
@@ -34,8 +38,28 @@ class DataBase:
         self.attributes_cardinality = {
             attribute[0].lower(): attribute[-1].lower() for attribute in schema}
 
-    def check_facts(self, facts):
-        return True
+    def check_facts(self, schema, facts):
+        entity_check, attribute_check, value_check, add_check, len_check = [], [], [], [], []
+        attributes = [att[0] for att in schema]
+        for fact in facts:
+            try:
+                entity = fact[0]
+                att_name = fact[1]
+                value = fact[2]
+                add = fact[3]
+                
+                entity_check.append(type(entity) == str)
+                attribute_check.append(att_name in attributes)
+                value_check.append(not is_list_or_tuple(value))
+                add_check.append(type(add) == bool)
+                len_check.append(len(fact) == 4)
+            
+            except IndexError:
+                print("Bad facts list")
+                return false
+
+        all_checks = [entity_check, attribute_check, value_check, add_check, len_check]
+        return all(all_checks)
 
     def update_facts(self, facts):
         for fact in facts:
@@ -94,7 +118,7 @@ class Entity:
             try:
                 self.attributes[att_name].remove(value)
             except ValueError:
-                print("Não há um fato com esse valor")
+                print("There's no fact with this value")
                 return
 
         if (cardinality == "one" and self.attributes[att_name] == value) or self.attributes[att_name] == []:
