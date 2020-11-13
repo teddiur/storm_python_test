@@ -1,13 +1,10 @@
-from typing import Union
+from data import facts, schema
 
-# FactList = list[Union[str, bool]]
-# FactTuple = tuple[Union[str, bool]]
-# facts: Union[FactList, FactTuple], schema: Union[list[str], tuple[str]]
 def is_list_or_tuple(inspected):
     return type(inspected) == list or type(inspected) == tuple
 
 class DataBase:
-    def __init__(self, facts, schema, test=False):
+    def __init__(self, schema, facts, test=False):
         self.current_facts = {}
         self.attributes_cardinality = {}
         if not test:
@@ -15,7 +12,7 @@ class DataBase:
                 self.update_schema(schema)
                 self.update_facts(facts)
 
-    def check_schema(self, schemas: Union[list, tuple]) -> bool:
+    def check_schema(self, schemas) -> bool:
         try:
             if not is_list_or_tuple(schemas) or not all([is_list_or_tuple(schema) for schema in schemas]):
                 print("Bad schemas, it should be a list/tuple of list/tuple")
@@ -70,13 +67,16 @@ class DataBase:
                     name, self.attributes_cardinality)
             self.current_facts[name].manage_attribute(params)
 
-    def show_facts(self):
+class DataBaseViewer:
+    def __init__(self, DataBase):
+        self.entities = DataBase.current_facts.values()
+
+    def show_current_facts(self):
         facts = []
-        for entity in self.current_facts.values():
-            facts.extend(entity.get_attributes())
-        self.prettify(facts)
-    
-    def prettify(self, facts):
+        [facts.extend(entity.get_attributes()) for entity in self.entities]
+        self.prettify()
+
+    def prettify(self):
         print('[')
         for i, fact in enumerate(facts):
             print(f'    {fact}', end='')
@@ -111,7 +111,6 @@ class Entity:
 
         self.attributes[att_name] = value
 
-
     def remove_attribute(self, att_name, value):
         cardinality = self.attributes_cardinality[att_name]
         if cardinality == "many":
@@ -138,3 +137,8 @@ class Entity:
         else:
             facts.append((self.name, att_name, self.attributes[att_name], True))
         return facts
+
+
+YourDataBase = DataBase(schema, facts)
+YourDataBaseViewer = DataBaseViewer(YourDataBase)
+YourDataBaseViewer.show_current_facts()

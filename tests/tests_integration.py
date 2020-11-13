@@ -1,4 +1,4 @@
-from app import DataBase
+from app import DataBase, DataBaseViewer
 
 def test_update_facts():
     facts = [
@@ -23,10 +23,9 @@ def test_update_facts():
         ('gabriel', 'telefone', '56789-1010', True)
     ]
 
-    test = DataBase(schema, facts, test=True)
-    test.update_schema(schema)
-    test.update_facts(facts)
-    test.show_facts()
-    assert test.check_facts(schema, facts) == True
-    # print(test)
-test_update_facts()
+    TestDataBase = DataBase(schema, facts, test=True)
+    TestDataBase.update_schema(schema)
+    TestDataBase.update_facts(facts)
+    Viewer = DataBaseViewer(TestDataBase)
+    Viewer.show_current_facts()
+    assert TestDataBase.check_facts(schema, facts) == True
