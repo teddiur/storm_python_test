@@ -1,5 +1,4 @@
-from ..src import app
-app.DataBase(None, None, test=True)
+from app import DataBase
 
 
 def test_schema_true():

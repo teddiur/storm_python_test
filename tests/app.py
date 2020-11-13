@@ -12,7 +12,7 @@ class DataBase:
         if not test:
             if self.check_schema(schema) and self.check_facts(facts):
                 self.update_schema(schema)
-                self.init_facts(facts)
+                self.update_facts(facts)
 
     def check_schema(self, schema: Union[list, tuple]) -> bool:
         def is_list_or_tuple(list_or_tuple):
@@ -36,27 +36,17 @@ class DataBase:
         self.attribute_cardinality = {
             attribute[0].lower(): attribute[-1].lower() for attribute in schema}
 
-    def check_facts(self):
+    def check_facts(self, facts):
         return True
 
-    def init_facts(self, facts):
+    def update_facts(self, facts):
         for fact in facts:
-            if fact[-1]:
-                name = fact[0]
-                if self.current_facts.get(name, False) == False:
-                    self.current_facts[name] = Entity(
-                        name, self.attributes_cardinality)
-                self.current_facts[name].add_attribute(fact[1:-1])
-                # check cardinality
-                # if one, replace, continue
-                # just add
-
-                # entity doesn't exist
-
-                pass
-            else:
-                pass
-                # check if in self.facts
+            name = fact[0]
+            if self.current_facts.get(name, False) == False:
+                self.current_facts[name] = Entity(
+                    name, self.attributes_cardinality)
+                    
+            self.current_facts[name].manage_attribute(fact[1:])
 
 
 class Entity:
@@ -65,21 +55,36 @@ class Entity:
         self.attributes_cardinality = attributes_cardinality
         self.attributes = {}  # name: value OU name: [value1, value2]
 
-    def add_attribute(self, attribute):
+    def manage_attribute(self, attribute):
         attribute_name = attribute[0]
         attribute_value = attribute[1]
-        # TODO
-        # if there's no record of this particular attribute, create it
-        if self.attributes.get(attribute_name, False) == False:
-            self.manage_cardinality(
-                attribute_name, attribute_value)
+        add = attribute[2]
 
-    def manage_cardinality(self, attribute, value):
-        if self.attributes_cardinality[attribute] == "many":
+        if add:
+            self.add_attribute(
+                attribute_name, attribute_value)
+        else:
+            self.remove_attribute(attribute_name, attribute_value)
+
+    def add_attribute(self, att_name, value):
+        if self._names_cardinality[att_name] == "many":
             try:
-                self.attributes[attribute].append(value)
+                self.attributes[att_name].append(value)
             except AttributeError:
-                self.attributes[attribute] = [value]
+                self.attributes[att_name] = [value]
             finally:
                 return
-        self.attributes[attribute] = value
+
+        self.attributes[att_name] = value
+
+    def remove_attribute(self, att_name, value):
+        cardinality = self.attribute_cardinality[att_name]
+        if cardinality == "many":
+            try:
+                self.attributes[att_name].remove(value)
+            except ValueError:
+                print("Não há um fato com esse valor")
+                return
+
+        if (cardinality == "one" and self.attributes[att_name] = value) or self.attributes[att_name] == [] 
+            del self.attributes[att_name]

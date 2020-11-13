@@ -8,21 +8,21 @@ Storm's Python test
 [x] Database method to check if schema is well formatted
 [ ] Database method to check if input facts is well formatted
 [x] Database method to update schema (create a dict with {schema_name: cardinality})
-[ ] Database method to update update current_facts
-    [ ] if name doesn't exist in current_facts instantialize Entity and add it to the dict
-    [ ] call Entity method to update it's facts
+[x] Database method to update update current_facts
+    [x] if name doesn't exist in current_facts instantialize Entity and add it to the dict
+    [x] call Entity method to update it's facts
 [ ] Database method to print all current_facts (it calls all Entities method to print its facts)
 
 [x] create Entity class
     [x] name (str) param
     [x] attributes_cardinality (dict) param
     [x] attributes ({})
-[ ] Entity method to update facts
-    [ ] Decide if add, reassing or delete
-        [ ] Entity method to add fact
-        [ ] Entity method to reassing fact
-        [ ] Entity method to delete fact
-[ ] Entity method to print its facts
+[x] Entity method to manage attribute
+    [x] Decide if add, reassing or delete
+        [x] Entity method to add attribute
+        [x] Entity method to reassing attribute
+        [x] Entity method to delete attribute
+[ ] Entity method to print its attributes
 
 
 current_facts = {name: entity}
