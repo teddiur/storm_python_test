@@ -12,8 +12,8 @@ def test_update_facts():
         ('gabriel', 'telefone', '56789-1010', True),
     ]
     schema = [
-    ('endereço', 'cardinality', 'one'),
-    ('telefone', 'cardinality', 'many')
+        ('endereço', 'cardinality', 'one'),
+        ('telefone', 'cardinality', 'many')
     ]
     expected_result = [
         ('gabriel', 'endereço', 'av rio branco, 109', True),
@@ -23,9 +23,10 @@ def test_update_facts():
         ('gabriel', 'telefone', '56789-1010', True)
     ]
 
-    TestDataBase = DataBase(schema, facts, test=True)
-    TestDataBase.update_schema(schema)
-    TestDataBase.update_facts(facts)
-    Viewer = DataBaseViewer(TestDataBase)
-    Viewer.show_current_facts()
-    assert TestDataBase.check_facts(schema, facts) == True
+    TestDataBase = DataBase(schema, facts)
+    facts = TestDataBase.get_entities()
+    results = []
+    [results.extend(fact.get_facts()) for fact in facts]
+    assert all([result in expected_result for result in results]) == True
+
+

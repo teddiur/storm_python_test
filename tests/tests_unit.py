@@ -1,23 +1,23 @@
 from app import DataBase
 
 
-def test_schema_small_true():
+def test_check_schema_small_true():
     schema = [['GONNA', 'JUST one schema', 'one']]
     assert DataBase(None, None, test=True).check_schema(schema) == True
 
-def test_schema_big_true():
+def test_check_schema_big_true():
     schema = [['EVEN', 'IF', 'ONE'], ['OF STRINGS', 'ARE RIDICULOUS LARGE', 'MaNY'], ['GONNA', 'pass the test', 'one']]
     assert DataBase(None, None, test=True).check_schema(schema) == True
 
-def test_schema_onemany_false():
+def test_check_schema_onemany_false():
     schema = [['GONNA', 'JUST one schema', 'one', 'hehe']]
     assert DataBase(None, None, test=True).check_schema(schema) == False
 
-def test_schema_number_false():
+def test_check_schema_number_false():
     schema = [['EVEN', 'IF', 'ONE'], ['OF STRINGS', 1, 'erp'], ['GONNA', 'pass the test', 'one']]
     assert DataBase(None, None, test=True).check_schema(schema) == False
 
-def test_schema_lenght_false():
+def test_check_schema_lenght_false():
     schema = [['EVEN', 'IF', 'ONE'], ['yeah'], ['OF STRINGS', 'hehe', 'many'], ['GONNA', 'pass the test', 'one']]
     assert DataBase(None, None, test=True).check_schema(schema) == False
 
@@ -33,7 +33,7 @@ def test_update_schema_true():
         # Dict comparission doesn't work well if dicts are different
         test = DataBase(None, None, test=True)
         test.update_schema(schema)
-        assert test.attributes_cardinality == expected_result[i]
+        assert test.get_cardinality() == expected_result[i]
 
 def test_check_facts():
     facts = [
@@ -54,5 +54,28 @@ def test_check_facts():
     test = DataBase(schema, facts, test=True)
     assert test.check_facts(schema, facts) == True
 
+def test_prettify():
+    class EntityMock:
+        def __init__(self, ElementMock):
+            self.mock = ElementMock
+        
+        def get_facts(self):
+            facts=[[('gabriel', 'endereço', 'av rio branco, 109', True), ('gabriel', 'telefone', '98888-1111', True), ('gabriel', 'telefone', '56789-1010', True)], [('joão', 'endereço', 'rua bob, 88', True), ('joão', 'telefone', '91234-5555', True)]]
+            return facts[self.mock]
 
 
+    class TestMock:
+        def get_entities(self):
+            return [EntityMock(0), EntityMock(1)]
+
+
+    expected_result = """
+[
+    ('gabriel', 'endereço', 'av rio branco, 109', True),
+    ('gabriel', 'telefone', '98888-1111', True),
+    ('gabriel', 'telefone', '56789-1010', True),
+    ('joão', 'endereço', 'rua bob, 88', True),
+    ('joão', 'telefone', '91234-5555', True)
+]"""
+
+    
