@@ -1,8 +1,10 @@
-from data import facts, schema
+from .data import facts, schema
 from typing import Tuple, List, Dict, Union, Type
+
 
 def is_list_or_tuple(inspected):
     return type(inspected) == list or type(inspected) == tuple
+
 
 Fact = Union[List[Union[str, bool]], Tuple[Union[str, bool]]]
 Facts = List[Fact]
@@ -46,20 +48,21 @@ class Entity:
 
         if (cardinality == "one" and self.attributes[att_name] == value) or self.attributes[att_name] == []:
             del self.attributes[att_name]
-    
+
     def get_facts(self) -> List[Tuple[str]]:
         facts = []
         for att_name in self.attributes.keys():
             facts.extend(self._get_fact(att_name))
         return facts
-    
+
     def _get_fact(self, att_name: str) -> List[Tuple[str]]:
         facts = []
         if is_list_or_tuple(self.attributes[att_name]):
             for value in self.attributes[att_name]:
                 facts.append((self.name, att_name, value, True))
         else:
-            facts.append((self.name, att_name, self.attributes[att_name], True))
+            facts.append(
+                (self.name, att_name, self.attributes[att_name], True))
         return facts
 
 
@@ -105,7 +108,7 @@ class DataBase:
                 one_or_many = all([attribute[2].lower() == "one" or attribute[2].lower(
                 ) == "many" for attribute in schema])
                 string_status = all([type(item) == str
-                                    for attribute in schema for item in attribute])
+                                     for attribute in schema for item in attribute])
         except IndexError:
             print("Bad schema, your cardinality specification is too short")
             return False
@@ -113,7 +116,8 @@ class DataBase:
         return all((len_status, one_or_many, string_status))
 
     def update_schema(self, schema: Schema) -> None:
-        [self._set_cardinality(attribute[0].lower(), attribute[-1].lower()) for attribute in schema]
+        [self._set_cardinality(attribute[0].lower(),
+                               attribute[-1].lower()) for attribute in schema]
 
     def check_facts(self, schema: Schema, facts: Facts) -> bool:
         entity_check, attribute_check, value_check, add_check, len_check = [], [], [], [], []
@@ -123,27 +127,29 @@ class DataBase:
                 att_name = fact[1]
                 value = fact[2]
                 add = fact[3]
-                
+
                 entity_check.append(type(entity) == str)
                 attribute_check.append(att_name in schema)
                 value_check.append(not is_list_or_tuple(value))
                 add_check.append(type(add) == bool)
                 len_check.append(len(fact) == 4)
-            
+
             except IndexError:
                 print("Bad facts list")
                 return false
 
-        all_checks = [entity_check, attribute_check, value_check, add_check, len_check]
+        all_checks = [entity_check, attribute_check,
+                      value_check, add_check, len_check]
         return all(all_checks)
 
     def update_facts(self, facts: Facts) -> None:
         schema = self.get_cardinality().keys()
-        if self.check_facts(schema, facts):    
+        if self.check_facts(schema, facts):
             for fact in facts:
                 name = fact[0]
                 params = fact[1:]
                 self._set_fact(name, params)
+
 
 class DataBaseViewer:
     def __init__(self, YourDataBase: Type[DataBase]) -> None:
@@ -153,7 +159,7 @@ class DataBaseViewer:
         entities = self.database.get_entities()
         facts = []
         [facts.extend(entity.get_facts()) for entity in entities]
-        
+
         self.prettify(facts)
 
     def prettify(self, facts: List[Tuple[str]]) -> None:
@@ -163,6 +169,7 @@ class DataBaseViewer:
             if i != len(facts)-1:
                 print(',')
         print('\n]')
+
 
 YourDataBase = DataBase(schema, facts)
 YourDataBaseViewer = DataBaseViewer(YourDataBase)

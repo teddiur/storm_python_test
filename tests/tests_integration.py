@@ -1,4 +1,5 @@
-from app import DataBase, DataBaseViewer
+from ..src.app import DataBase, DataBaseViewer
+
 
 def test_update_facts():
     facts = [
@@ -28,5 +29,3 @@ def test_update_facts():
     results = []
     [results.extend(fact.get_facts()) for fact in facts]
     assert all([result in expected_result for result in results]) == True
-
-

@@ -6,6 +6,9 @@ Storm's Python test
 > Ou seja, quais são as informações que estão valendo no momento atual.
 > A função deve receber `facts` (todos fatos conhecidos) e `schema` como argumentos.
 
+src/app.py is the entry file
+src/data.py is the input file that app.py uses
+
 ## To-do list
 * [x] create database class
     * [x] entities dict ({})
