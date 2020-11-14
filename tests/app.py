@@ -10,9 +10,9 @@ Schema = List[List[str]]
 
 
 class Entity:
-    def __init__(self, name: str, attributes_cardinality: Dict[str, str]) -> None:
+    def __init__(self, name: str, cardinality: Dict[str, str]) -> None:
         self.name = name
-        self.attributes_cardinality = attributes_cardinality
+        self.cardinality = cardinality
         self.attributes = {}  # name: value OU name: [value1, value2]
 
     def manage_fact(self, attribute: List[Union[str, bool]]) -> None:
@@ -25,7 +25,7 @@ class Entity:
             self._remove_fact(attribute_name, attribute_value)
 
     def _add_fact(self, att_name: str, value: str) -> None:
-        if self.attributes_cardinality[att_name] == "many":
+        if self.cardinality[att_name] == "many":
             try:
                 self.attributes[att_name].append(value)
             except KeyError:
@@ -36,7 +36,7 @@ class Entity:
         self.attributes[att_name] = value
 
     def _remove_fact(self, att_name: str, value: str) -> None:
-        cardinality = self.attributes_cardinality[att_name]
+        cardinality = self.cardinality[att_name]
         if cardinality == "many":
             try:
                 self.attributes[att_name].remove(value)
